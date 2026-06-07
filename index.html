@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SwingCoach AI Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <div class="brand">
+        <div class="logo">⛳</div>
+        <span>SwingCoach AI</span>
+      </div>
+      <button id="resetBtn" class="ghost-btn">Reset demo</button>
+    </nav>
+
+    <section class="hero-grid">
+      <div>
+        <p class="eyebrow">AI golf swing coaching prototype</p>
+        <h1>Your personal golf coach, right in your pocket.</h1>
+        <p class="hero-copy">
+          Upload a golf swing, run a mock AI analysis, and get coaching tips,
+          improvement areas, and a practice plan.
+        </p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#analyze">Analyze a swing</a>
+          <a class="secondary-btn" href="#progress">View progress</a>
+        </div>
+      </div>
+
+      <div class="phone-card">
+        <div class="phone-top"></div>
+        <div class="score-ring">
+          <span id="heroScore">82</span>
+          <small>Coach Score</small>
+        </div>
+        <div class="mini-feedback">
+          <strong>Priority Focus</strong>
+          <p id="heroFocus">Improve club path and tempo consistency.</p>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <main>
+    <section id="analyze" class="panel two-column">
+      <div>
+        <p class="eyebrow">Step 1</p>
+        <h2>Upload or record a swing</h2>
+        <p class="muted">
+          This prototype runs in your browser. On a phone, the upload button can open your camera.
+          The analysis is mocked for demo purposes.
+        </p>
+
+        <label class="upload-box" for="videoInput">
+          <input id="videoInput" type="file" accept="video/*" capture="environment" />
+          <span class="upload-icon">🎥</span>
+          <strong>Choose or record swing video</strong>
+          <small>MP4, MOV, or phone camera capture</small>
+        </label>
+
+        <div class="form-row">
+          <label>
+            Club type
+            <select id="clubSelect">
+              <option value="driver">Driver</option>
+              <option value="iron">Iron</option>
+              <option value="wedge">Wedge</option>
+              <option value="putter">Putter</option>
+            </select>
+          </label>
+          <label>
+            View angle
+            <select id="angleSelect">
+              <option value="down-the-line">Down the line</option>
+              <option value="face-on">Face on</option>
+              <option value="rear">Rear</option>
+            </select>
+          </label>
+        </div>
+
+        <button id="analyzeBtn" class="primary-btn full">Analyze My Swing</button>
+      </div>
+
+      <div class="video-card">
+        <video id="videoPreview" controls playsinline></video>
+        <div id="emptyVideo" class="empty-video">
+          <span>🏌️‍♂️</span>
+          <p>Your swing video preview will appear here.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">Step 2</p>
+          <h2>AI coaching report</h2>
+        </div>
+        <span id="analysisStatus" class="status-pill">Waiting for swing</span>
+      </div>
+
+      <div class="report-grid">
+        <article class="report-card highlight">
+          <span>Main Issue</span>
+          <h3 id="mainIssue">Upload a swing to begin</h3>
+          <p id="mainIssueCopy">The app will generate a coaching summary after analysis.</p>
+        </article>
+        <article class="report-card">
+          <span>Strength</span>
+          <h3 id="strengthTitle">—</h3>
+          <p id="strengthCopy">—</p>
+        </article>
+        <article class="report-card">
+          <span>Quick Cue</span>
+          <h3 id="cueTitle">—</h3>
+          <p id="cueCopy">—</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="progress" class="panel two-column">
+      <div>
+        <p class="eyebrow">Step 3</p>
+        <h2>Improvement tracker</h2>
+        <p class="muted">
+          Track key swing areas over time. This mockup saves your latest analysis locally in your browser.
+        </p>
+        <div id="metricsList" class="metrics-list"></div>
+      </div>
+
+      <div class="practice-card">
+        <p class="eyebrow">Recommended practice plan</p>
+        <h2 id="practiceFocus">Analyze a swing first</h2>
+        <div id="practicePlan" class="practice-plan">
+          <p>Your personalized drills will appear here.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">Demo roadmap</p>
+          <h2>Future real AI features</h2>
+        </div>
+      </div>
+      <div class="roadmap">
+        <div><strong>Pose tracking</strong><span>Detect hips, shoulders, knees, and swing positions.</span></div>
+        <div><strong>Before/after comparison</strong><span>Compare swing improvements over time.</span></div>
+        <div><strong>Coach library</strong><span>Personalized drills by skill level and club type.</span></div>
+        <div><strong>Progress history</strong><span>Save sessions, notes, and practice goals.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>SwingCoach AI Prototype · Static GitHub Pages demo</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
