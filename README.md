@@ -5,6 +5,7 @@ A GitHub Pages-ready mockup for an AI golf swing coaching app.
 ## What this prototype includes
 
 - Upload or record a golf swing video
+- Built-in sample swing video with a “Try sample swing” button
 - Preview the swing video in the browser
 - Select club type, camera angle, skill level, and coach engine
 - Demo AI Coach mode that works with no API key
@@ -37,7 +38,7 @@ Recommended path:
 ## Deploy to GitHub Pages
 
 1. Create a new GitHub repository.
-2. Upload `index.html`, `style.css`, `script.js`, and `README.md`.
+2. Upload `index.html`, `style.css`, `script.js`, `README.md`, and the `assets` folder.
 3. Go to **Settings → Pages**.
 4. Choose **Deploy from a branch**.
 5. Select `main` and `/root`.

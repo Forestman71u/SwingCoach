@@ -54,12 +54,20 @@
           Demo Mode works with no API key. API Coach Mode is ready for a secure backend later.
         </p>
 
-        <label class="upload-box" for="videoInput">
-          <input id="videoInput" type="file" accept="video/*" capture="environment" />
-          <span class="upload-icon">🎥</span>
-          <strong>Choose or record swing video</strong>
-          <small>MP4, MOV, or phone camera capture</small>
-        </label>
+        <div class="swing-source-grid">
+          <label class="upload-box" for="videoInput">
+            <input id="videoInput" type="file" accept="video/*" capture="environment" />
+            <span class="upload-icon">🎥</span>
+            <strong>Choose or record swing video</strong>
+            <small>MP4, MOV, or phone camera capture</small>
+          </label>
+
+          <button id="sampleSwingBtn" class="sample-swing-card" type="button">
+            <span class="upload-icon">🏌️‍♂️</span>
+            <strong>Try sample swing</strong>
+            <small>Loads the built-in demo video</small>
+          </button>
+        </div>
 
         <div class="form-row">
           <label>

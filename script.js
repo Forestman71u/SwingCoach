@@ -2,6 +2,7 @@ const videoInput = document.getElementById('videoInput');
 const videoPreview = document.getElementById('videoPreview');
 const emptyVideo = document.getElementById('emptyVideo');
 const analyzeBtn = document.getElementById('analyzeBtn');
+const sampleSwingBtn = document.getElementById('sampleSwingBtn');
 const clubSelect = document.getElementById('clubSelect');
 const angleSelect = document.getElementById('angleSelect');
 const engineSelect = document.getElementById('engineSelect');
@@ -27,6 +28,12 @@ const payloadPreview = document.getElementById('payloadPreview');
 
 const metricNames = ['Tempo', 'Club Path', 'Weight Transfer', 'Balance', 'Hip Rotation'];
 const insightNames = ['Setup posture', 'Head stability', 'Lead arm structure', 'Shoulder turn', 'Finish hold'];
+const sampleSwing = {
+  src: 'assets/sample-swing.mp4',
+  poster: 'assets/sample-swing-poster.jpg',
+  club: 'driver',
+  angle: 'face-on'
+};
 
 const coachingLibrary = {
   driver: [
@@ -247,15 +254,30 @@ function loadSavedAnalysis() {
   analysisStatus.classList.add('ready');
 }
 
+function showVideo(src, statusText, poster = '') {
+  videoPreview.src = src;
+  videoPreview.poster = poster;
+  videoPreview.style.display = 'block';
+  emptyVideo.style.display = 'none';
+  analysisStatus.textContent = statusText;
+  analysisStatus.classList.remove('ready');
+}
+
 videoInput.addEventListener('change', event => {
   const file = event.target.files[0];
   if (!file) return;
   const videoUrl = URL.createObjectURL(file);
-  videoPreview.src = videoUrl;
-  videoPreview.style.display = 'block';
-  emptyVideo.style.display = 'none';
-  analysisStatus.textContent = 'Swing uploaded';
-  analysisStatus.classList.remove('ready');
+  showVideo(videoUrl, 'Swing uploaded');
+});
+
+sampleSwingBtn.addEventListener('click', () => {
+  clubSelect.value = sampleSwing.club;
+  angleSelect.value = sampleSwing.angle;
+  showVideo(sampleSwing.src, 'Sample swing loaded', sampleSwing.poster);
+  videoPreview.load();
+  videoPreview.play().catch(() => {
+    // Some browsers block autoplay. The video is still loaded and ready for the user to press play.
+  });
 });
 
 analyzeBtn.addEventListener('click', async () => {
