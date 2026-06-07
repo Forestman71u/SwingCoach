@@ -4,6 +4,10 @@ const emptyVideo = document.getElementById('emptyVideo');
 const analyzeBtn = document.getElementById('analyzeBtn');
 const clubSelect = document.getElementById('clubSelect');
 const angleSelect = document.getElementById('angleSelect');
+const engineSelect = document.getElementById('engineSelect');
+const skillSelect = document.getElementById('skillSelect');
+const apiSettings = document.getElementById('apiSettings');
+const apiEndpoint = document.getElementById('apiEndpoint');
 const analysisStatus = document.getElementById('analysisStatus');
 const resetBtn = document.getElementById('resetBtn');
 
@@ -18,8 +22,11 @@ const practiceFocus = document.getElementById('practiceFocus');
 const practicePlan = document.getElementById('practicePlan');
 const heroScore = document.getElementById('heroScore');
 const heroFocus = document.getElementById('heroFocus');
+const insightsList = document.getElementById('insightsList');
+const payloadPreview = document.getElementById('payloadPreview');
 
 const metricNames = ['Tempo', 'Club Path', 'Weight Transfer', 'Balance', 'Hip Rotation'];
+const insightNames = ['Setup posture', 'Head stability', 'Lead arm structure', 'Shoulder turn', 'Finish hold'];
 
 const coachingLibrary = {
   driver: [
@@ -95,6 +102,81 @@ function buildMetrics(focus) {
   return metrics;
 }
 
+function buildInsights(focus) {
+  const insightMap = {
+    'Tempo': 'Transition is quick from the top',
+    'Club Path': 'Downswing path trends across the ball',
+    'Weight Transfer': 'Pressure shift into lead side is late',
+    'Balance': 'Finish hold needs more stability',
+    'Hip Rotation': 'Hips could clear earlier through impact'
+  };
+  return {
+    'Setup posture': getRandomScore(64, 91) + '% stable',
+    'Head stability': getRandomScore(52, 84) + '% centered',
+    'Lead arm structure': getRandomScore(55, 88) + '% maintained',
+    'Shoulder turn': getRandomScore(58, 90) + '% complete',
+    'Finish hold': focus === 'Balance' ? 'Needs work' : 'Mostly stable',
+    'Detected pattern': insightMap[focus] || 'General consistency opportunity'
+  };
+}
+
+function renderInsights(insights) {
+  insightsList.innerHTML = '';
+  Object.entries(insights).forEach(([name, value]) => {
+    const row = document.createElement('div');
+    row.className = 'insight-row';
+    row.innerHTML = `<span>${name}</span><strong>${value}</strong>`;
+    insightsList.appendChild(row);
+  });
+}
+
+function buildCoachPayload(result, metrics, insights) {
+  return {
+    appMode: engineSelect.value,
+    skillLevel: skillSelect.value,
+    club: clubSelect.value,
+    cameraAngle: angleSelect.value,
+    priorityFocus: result.focus,
+    mockMetrics: metrics,
+    mockVideoInsights: insights,
+    instruction: 'Write concise golf coaching feedback, one priority fix, three drills, and a one-week practice plan.'
+  };
+}
+
+function renderPayload(payload) {
+  payloadPreview.textContent = JSON.stringify(payload, null, 2);
+}
+
+async function tryApiCoach(payload, fallbackResult) {
+  const endpoint = apiEndpoint.value.trim();
+  if (!endpoint) {
+    return { ...fallbackResult, apiNote: 'API Coach Mode selected, but no endpoint was entered. Used local demo coaching instead.' };
+  }
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error(`API returned ${response.status}`);
+    const data = await response.json();
+    return {
+      ...fallbackResult,
+      issue: data.issue || fallbackResult.issue,
+      detail: data.detail || fallbackResult.detail,
+      strength: data.strength || fallbackResult.strength,
+      strengthDetail: data.strengthDetail || fallbackResult.strengthDetail,
+      cue: data.cue || fallbackResult.cue,
+      cueDetail: data.cueDetail || fallbackResult.cueDetail,
+      drills: Array.isArray(data.drills) ? data.drills : fallbackResult.drills,
+      apiNote: 'Coaching response returned from your backend endpoint.'
+    };
+  } catch (error) {
+    return { ...fallbackResult, apiNote: `Could not reach endpoint. Used demo coaching instead. ${error.message}` };
+  }
+}
+
 function renderMetrics(metrics) {
   metricsList.innerHTML = '';
   Object.entries(metrics).forEach(([name, value]) => {
@@ -108,7 +190,7 @@ function renderMetrics(metrics) {
   });
 }
 
-function renderAnalysis(result) {
+function renderAnalysis(result, metrics, insights, payload) {
   mainIssue.textContent = result.issue;
   mainIssueCopy.textContent = result.detail;
   strengthTitle.textContent = result.strength;
@@ -123,22 +205,24 @@ function renderAnalysis(result) {
     <p><strong>Coach note:</strong> Film another swing after practicing and compare your movement pattern.</p>
   `;
 
-  const metrics = buildMetrics(result.focus);
   renderMetrics(metrics);
+  renderInsights(insights);
+  renderPayload(payload);
 
   const score = Math.round(Object.values(metrics).reduce((a, b) => a + b, 0) / metricNames.length);
   heroScore.textContent = score;
   heroFocus.textContent = `Improve ${result.focus.toLowerCase()} with ${result.drills[0].toLowerCase()}.`;
-  analysisStatus.textContent = 'Analysis complete';
+  analysisStatus.textContent = result.apiNote ? result.apiNote : 'Analysis complete';
   analysisStatus.classList.add('ready');
 
-  localStorage.setItem('swingcoach-analysis', JSON.stringify({ ...result, metrics, score }));
+  localStorage.setItem('swingcoach-analysis', JSON.stringify({ ...result, metrics, insights, payload, score }));
 }
 
 function loadSavedAnalysis() {
   const saved = localStorage.getItem('swingcoach-analysis');
   if (!saved) {
     renderMetrics(Object.fromEntries(metricNames.map(name => [name, 0])));
+    renderInsights(Object.fromEntries(insightNames.map(name => [name, '—'])));
     return;
   }
   const result = JSON.parse(saved);
@@ -155,6 +239,8 @@ function loadSavedAnalysis() {
     <p><strong>Coach note:</strong> Film another swing after practicing and compare your movement pattern.</p>
   `;
   renderMetrics(result.metrics);
+  renderInsights(result.insights || Object.fromEntries(insightNames.map(name => [name, '—'])));
+  renderPayload(result.payload || { note: 'Saved analysis was created before payload preview existed.' });
   heroScore.textContent = result.score;
   heroFocus.textContent = `Improve ${result.focus.toLowerCase()} with ${result.drills[0].toLowerCase()}.`;
   analysisStatus.textContent = 'Saved analysis loaded';
@@ -172,21 +258,36 @@ videoInput.addEventListener('change', event => {
   analysisStatus.classList.remove('ready');
 });
 
-analyzeBtn.addEventListener('click', () => {
+analyzeBtn.addEventListener('click', async () => {
   analyzeBtn.disabled = true;
   analyzeBtn.textContent = 'Analyzing swing...';
-  analysisStatus.textContent = 'Analyzing motion';
+  analysisStatus.textContent = engineSelect.value === 'api' ? 'Preparing coaching payload' : 'Analyzing motion';
   analysisStatus.classList.remove('ready');
 
-  setTimeout(() => {
+  setTimeout(async () => {
     const club = clubSelect.value;
     const library = coachingLibrary[club];
     const selected = library[Math.floor(Math.random() * library.length)];
     const angle = angleSelect.value.replaceAll('-', ' ');
-    renderAnalysis({ ...selected, angle, club });
+    const fallbackResult = { ...selected, angle, club };
+    const metrics = buildMetrics(fallbackResult.focus);
+    const insights = buildInsights(fallbackResult.focus);
+    const payload = buildCoachPayload(fallbackResult, metrics, insights);
+    let finalResult = fallbackResult;
+
+    if (engineSelect.value === 'api') {
+      analysisStatus.textContent = 'Calling coaching endpoint';
+      finalResult = await tryApiCoach(payload, fallbackResult);
+    }
+
+    renderAnalysis(finalResult, metrics, insights, payload);
     analyzeBtn.disabled = false;
     analyzeBtn.textContent = 'Analyze My Swing';
-  }, 900);
+  }, 700);
+});
+
+engineSelect.addEventListener('change', () => {
+  apiSettings.classList.toggle('hidden', engineSelect.value !== 'api');
 });
 
 resetBtn.addEventListener('click', () => {

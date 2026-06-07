@@ -51,7 +51,7 @@
         <h2>Upload or record a swing</h2>
         <p class="muted">
           This prototype runs in your browser. On a phone, the upload button can open your camera.
-          The analysis is mocked for demo purposes.
+          Demo Mode works with no API key. API Coach Mode is ready for a secure backend later.
         </p>
 
         <label class="upload-box" for="videoInput">
@@ -79,6 +79,34 @@
               <option value="rear">Rear</option>
             </select>
           </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Coach engine
+            <select id="engineSelect">
+              <option value="demo">Demo AI Coach - no API needed</option>
+              <option value="api">OpenAI Backend Hook - optional</option>
+            </select>
+          </label>
+          <label>
+            Skill level
+            <select id="skillSelect">
+              <option value="beginner">Beginner</option>
+              <option value="intermediate" selected>Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="apiSettings" class="api-settings hidden">
+          <label>
+            Secure coaching endpoint
+            <input id="apiEndpoint" type="url" placeholder="https://your-worker-or-function.example.com/analyze-swing" />
+          </label>
+          <small>
+            Do not paste an OpenAI API key here. This field is for a backend proxy such as a Cloudflare Worker, Netlify Function, or Vercel Function.
+          </small>
         </div>
 
         <button id="analyzeBtn" class="primary-btn full">Analyze My Swing</button>
@@ -121,6 +149,26 @@
       </div>
     </section>
 
+    <section class="panel two-column">
+      <div>
+        <p class="eyebrow">Under the hood</p>
+        <h2>Mock swing metrics</h2>
+        <p class="muted">
+          These are the measurements a future MediaPipe or vision model could produce. Right now they are simulated so you can demo the app concept.
+        </p>
+        <div id="insightsList" class="insights-list"></div>
+      </div>
+
+      <div class="practice-card">
+        <p class="eyebrow">AI integration path</p>
+        <h2>Ready for real coaching text</h2>
+        <p class="muted">
+          Demo Mode generates the report locally. API Coach Mode sends the mock metrics to your own secure backend, where OpenAI could write the coaching plan.
+        </p>
+        <pre id="payloadPreview" class="payload-preview">Analyze a swing to preview the coaching payload.</pre>
+      </div>
+    </section>
+
     <section id="progress" class="panel two-column">
       <div>
         <p class="eyebrow">Step 3</p>
@@ -148,7 +196,7 @@
         </div>
       </div>
       <div class="roadmap">
-        <div><strong>Pose tracking</strong><span>Detect hips, shoulders, knees, and swing positions.</span></div>
+        <div><strong>Pose tracking</strong><span>Use MediaPipe later to detect hips, shoulders, knees, and swing positions.</span></div>
         <div><strong>Before/after comparison</strong><span>Compare swing improvements over time.</span></div>
         <div><strong>Coach library</strong><span>Personalized drills by skill level and club type.</span></div>
         <div><strong>Progress history</strong><span>Save sessions, notes, and practice goals.</span></div>
